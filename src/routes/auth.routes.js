@@ -6,13 +6,14 @@ import { requireAdmin } from '../middleware/auth.js'
 
 const router = Router()
 
-router.post('/login', (req, res) => {
+router.post('/login', async (req, res) => {
   const { username, password } = req.body || {}
   if (!username || !password) {
     return res.status(400).json({ error: 'Login va parol kiritilishi shart' })
   }
 
-  const admin = db.prepare('SELECT * FROM admins WHERE username = ?').get(username)
+  const { rows } = await db.execute({ sql: 'SELECT * FROM admins WHERE username = ?', args: [username] })
+  const admin = rows[0]
   if (!admin || !bcrypt.compareSync(password, admin.password_hash)) {
     return res.status(401).json({ error: 'Login yoki parol noto\u2018g\u2018ri' })
   }
