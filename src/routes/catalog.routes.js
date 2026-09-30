@@ -6,7 +6,7 @@ import { asyncHandler } from "../middleware/asyncHandler.js";
 
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 20 * 1024 * 1024 },
+  limits: { fileSize: 50 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (file.mimetype !== "application/pdf") {
       return cb(new Error("Faqat PDF fayl yuklash mumkin"));
