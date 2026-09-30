@@ -59,6 +59,24 @@ export async function initDb() {
     );
   `)
 
+<<<<<<< HEAD
+=======
+  // Safe additive migrations for databases created by older releases.
+  const { rows: productColumns } = await db.execute('PRAGMA table_info(products)')
+  const existingColumns = new Set(productColumns.map((c) => String(c.name)))
+  const migrations = [
+    ['category_id', "TEXT NOT NULL DEFAULT ''"],
+    ['image_mime', "TEXT NOT NULL DEFAULT 'image/jpeg'"],
+    ['name_uz', "TEXT NOT NULL DEFAULT ''"], ['name_en', "TEXT NOT NULL DEFAULT ''"], ['name_ru', "TEXT NOT NULL DEFAULT ''"],
+    ['color_uz', "TEXT NOT NULL DEFAULT ''"], ['color_en', "TEXT NOT NULL DEFAULT ''"], ['color_ru', "TEXT NOT NULL DEFAULT ''"],
+    ['material_uz', "TEXT NOT NULL DEFAULT ''"], ['material_en', "TEXT NOT NULL DEFAULT ''"], ['material_ru', "TEXT NOT NULL DEFAULT ''"],
+    ['description_uz', "TEXT NOT NULL DEFAULT ''"], ['description_en', "TEXT NOT NULL DEFAULT ''"], ['description_ru', "TEXT NOT NULL DEFAULT ''"],
+  ]
+  for (const [column, definition] of migrations) {
+    if (!existingColumns.has(column)) await db.execute(`ALTER TABLE products ADD COLUMN ${column} ${definition}`)
+  }
+
+>>>>>>> d4e8bbb (chat)
   // Admin account always matches ADMIN_USERNAME / ADMIN_PASSWORD from the
   // environment, checked on every boot — no shell access needed to create
   // or reset it.

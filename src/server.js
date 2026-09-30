@@ -12,9 +12,33 @@ import productsRoutes from './routes/products.routes.js'
 const app = express()
 
 const allowedOrigins = (process.env.CORS_ORIGIN || '').split(',').map((s) => s.trim()).filter(Boolean)
+<<<<<<< HEAD
 app.use(cors({ origin: allowedOrigins.length ? allowedOrigins : true }))
 app.use(express.json())
 
+=======
+app.disable('x-powered-by')
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff')
+  res.setHeader('X-Frame-Options', 'DENY')
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+  next()
+})
+app.use(cors({ origin(origin, cb) {
+  if (!origin || process.env.NODE_ENV !== 'production' || allowedOrigins.includes(origin)) return cb(null, true)
+  cb(new Error('Bu origin uchun CORS ruxsati yo‘q'))
+} }))
+app.use(express.json({ limit: '1mb' }))
+
+const loginAttempts = new Map()
+app.use('/api/admin/login', (req, res, next) => {
+  if (req.method !== 'POST') return next()
+  const key = req.ip || 'unknown'; const now = Date.now(); const windowMs = 15 * 60 * 1000
+  const recent = (loginAttempts.get(key) || []).filter((t) => now - t < windowMs)
+  if (recent.length >= 10) return res.status(429).json({ error: 'Juda ko‘p urinish. 15 daqiqadan keyin qayta urinib ko‘ring.' })
+  recent.push(now); loginAttempts.set(key, recent); next()
+})
+>>>>>>> d4e8bbb (chat)
 app.use('/api/admin', authRoutes)
 app.use('/api/content', contentRoutes)
 app.use('/api/categories', categoriesRoutes)

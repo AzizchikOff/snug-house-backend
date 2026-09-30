@@ -31,7 +31,13 @@ router.get('/file', asyncHandler(async (req, res) => {
   const { rows } = await db.execute('SELECT filename, content FROM catalog_file WHERE id = 1')
   if (!rows[0]) return res.status(404).json({ error: 'Katalog hali yuklanmagan' })
   res.setHeader('Content-Type', 'application/pdf')
+<<<<<<< HEAD
   res.setHeader('Content-Disposition', `inline; filename="${rows[0].filename}"`)
+=======
+  const disposition = req.query.download === '1' ? 'attachment' : 'inline'
+  const safeName = String(rows[0].filename || 'catalog.pdf').replace(/[\r\n"]/g, '')
+  res.setHeader('Content-Disposition', `${disposition}; filename="${safeName}"`)
+>>>>>>> d4e8bbb (chat)
   res.send(Buffer.from(rows[0].content))
 }))
 
